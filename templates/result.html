@@ -1,16 +1,74 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Result</title>
+<meta charset="UTF-8">
+<title>Prediction Result</title>
+
+<style>
+
+body{
+    font-family:'Segoe UI',sans-serif;
+    background:linear-gradient(135deg,#f8fbff,#e6f4ff);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+.card{
+    background:white;
+    padding:50px;
+    border-radius:20px;
+    text-align:center;
+    box-shadow:0 15px 40px rgba(0,0,0,0.1);
+    width:450px;
+}
+
+h1{
+    color:#2563eb;
+    margin-bottom:20px;
+}
+
+.result{
+    font-size:28px;
+    font-weight:bold;
+    color:#0f766e;
+    margin:20px 0;
+}
+
+.btn{
+    display:inline-block;
+    margin-top:20px;
+    padding:12px 25px;
+    background:#3b82f6;
+    color:white;
+    text-decoration:none;
+    border-radius:10px;
+}
+
+.btn:hover{
+    background:#2563eb;
+}
+
+</style>
+
 </head>
 
 <body>
 
+<div class="card">
+
 <h1>Prediction Result</h1>
 
-<h2>{{ prediction }}</h2>
+<div class="result">
+{{ prediction }}
+</div>
 
-<a href="/">Back</a>
+<a href="/" class="btn">
+Predict Again
+</a>
+
+</div>
 
 </body>
 </html>

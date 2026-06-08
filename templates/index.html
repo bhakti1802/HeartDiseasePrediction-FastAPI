@@ -1,44 +1,206 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Heart Disease Prediction</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+body{
+    background:linear-gradient(135deg,#f8fbff,#e6f4ff);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:30px;
+}
+
+.container{
+    background:white;
+    width:100%;
+    max-width:800px;
+    border-radius:20px;
+    padding:40px;
+    box-shadow:0 15px 40px rgba(0,0,0,0.1);
+}
+
+.header{
+    text-align:center;
+    margin-bottom:30px;
+}
+
+.header h1{
+    color:#2563eb;
+    font-size:32px;
+    margin-bottom:10px;
+}
+
+.header p{
+    color:#64748b;
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+}
+
+.input-group{
+    display:flex;
+    flex-direction:column;
+}
+
+label{
+    margin-bottom:8px;
+    color:#334155;
+    font-weight:600;
+}
+
+input{
+    padding:12px;
+    border:1px solid #cbd5e1;
+    border-radius:10px;
+    outline:none;
+    font-size:15px;
+}
+
+input:focus{
+    border-color:#3b82f6;
+    box-shadow:0 0 10px rgba(59,130,246,0.2);
+}
+
+.btn{
+    width:100%;
+    margin-top:30px;
+    padding:14px;
+    border:none;
+    border-radius:12px;
+    background:#3b82f6;
+    color:white;
+    font-size:18px;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.btn:hover{
+    background:#2563eb;
+}
+
+.footer{
+    text-align:center;
+    margin-top:20px;
+    color:#64748b;
+}
+
+@media(max-width:768px){
+    .form-grid{
+        grid-template-columns:1fr;
+    }
+}
+
+</style>
 </head>
 
 <body>
 
-<h2>Heart Disease Prediction</h2>
+<div class="container">
+
+<div class="header">
+<h1>❤️ Heart Disease Prediction</h1>
+<p>Machine Learning Powered Health Risk Analysis</p>
+</div>
 
 <form action="/predict" method="post">
 
-<input type="number" name="age" placeholder="Age"><br><br>
+<div class="form-grid">
 
-<input type="number" name="sex" placeholder="Sex"><br><br>
+<div class="input-group">
+<label>Age</label>
+<input type="number" name="age" required>
+</div>
 
-<input type="number" name="cp" placeholder="Chest Pain"><br><br>
+<div class="input-group">
+<label>Gender (0 = Female, 1 = Male)</label>
+<input type="number" name="sex" required>
+</div>
 
-<input type="number" name="trestbps" placeholder="Blood Pressure"><br><br>
+<div class="input-group">
+<label>Chest Pain Type</label>
+<input type="number" name="cp" required>
+</div>
 
-<input type="number" name="chol" placeholder="Cholesterol"><br><br>
+<div class="input-group">
+<label>Resting Blood Pressure</label>
+<input type="number" name="trestbps" required>
+</div>
 
-<input type="number" name="fbs" placeholder="FBS"><br><br>
+<div class="input-group">
+<label>Cholesterol</label>
+<input type="number" name="chol" required>
+</div>
 
-<input type="number" name="restecg" placeholder="Rest ECG"><br><br>
+<div class="input-group">
+<label>Fasting Blood Sugar</label>
+<input type="number" name="fbs" required>
+</div>
 
-<input type="number" name="thalach" placeholder="Max Heart Rate"><br><br>
+<div class="input-group">
+<label>Rest ECG</label>
+<input type="number" name="restecg" required>
+</div>
 
-<input type="number" name="exang" placeholder="Exercise Angina"><br><br>
+<div class="input-group">
+<label>Maximum Heart Rate</label>
+<input type="number" name="thalach" required>
+</div>
 
-<input type="text" name="oldpeak" placeholder="Old Peak"><br><br>
+<div class="input-group">
+<label>Exercise Induced Angina</label>
+<input type="number" name="exang" required>
+</div>
 
-<input type="number" name="slope" placeholder="Slope"><br><br>
+<div class="input-group">
+<label>Old Peak</label>
+<input type="text" name="oldpeak" required>
+</div>
 
-<input type="number" name="ca" placeholder="CA"><br><br>
+<div class="input-group">
+<label>Slope</label>
+<input type="number" name="slope" required>
+</div>
 
-<input type="number" name="thal" placeholder="Thal"><br><br>
+<div class="input-group">
+<label>CA</label>
+<input type="number" name="ca" required>
+</div>
 
-<input type="submit" value="Predict">
+<div class="input-group">
+<label>Thal</label>
+<input type="number" name="thal" required>
+</div>
+
+</div>
+
+<button class="btn">
+Predict Heart Disease
+</button>
 
 </form>
+
+<div class="footer">
+FastAPI • Machine Learning • Jenkins Deployment
+</div>
+
+</div>
 
 </body>
 </html>
