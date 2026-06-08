@@ -7,5 +7,5 @@ def get_connection():
         host="localhost",
         user="root",
         password="student",
-        database="heartdb"
+        database="heartdbAPI"
     )
