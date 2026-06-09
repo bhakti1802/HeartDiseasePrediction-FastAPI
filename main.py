@@ -64,7 +64,11 @@ async def predict(
     }])
 
     # Convert to model input
-    features = input_data.values
+    features = np.array([[
+         age, sex, cp, trestbps, chol,
+         fbs, restecg, thalach, exang,
+         oldpeak, slope, ca, thal
+    ]])
 
     # Prediction
     prediction = model.predict(features)[0]
