@@ -89,7 +89,7 @@ async def predict(
 
     cursor.execute(
         """
-        INSERT INTO predictions
+        INSERT INTO prediction
         (age,sex,cp,trestbps,chol,prediction)
         VALUES(%s,%s,%s,%s,%s,%s)
         """,
