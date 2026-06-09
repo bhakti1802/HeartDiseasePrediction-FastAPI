@@ -48,20 +48,22 @@ async def predict(
 
     # ---------------- SAFE INPUT HANDLING ----------------
     input_data = pd.DataFrame([{
-        "age": age,
-        "sex": sex,
-        "cp": cp,
-        "trestbps": trestbps,
-        "chol": chol,
-        "fbs": fbs,
-        "restecg": restecg,
-        "thalach": thalach,
-        "exang": exang,
-        "oldpeak": oldpeak,
-        "slope": slope,
-        "ca": ca,
-        "thal": thal
-    }])
+    "age": age,
+    "sex": sex,
+    "cp": cp,
+    "trestbps": trestbps,
+    "chol": chol,
+    "fbs": fbs,
+    "restecg": restecg,
+    "thalach": thalach,
+    "exang": exang,
+    "oldpeak": oldpeak,
+    "slope": slope,
+    "ca": ca,
+    "thal": thal
+     }])
+
+    prediction = model.predict(input_data)[0]
 
     # Convert to model input
     features = np.array([[
@@ -70,10 +72,19 @@ async def predict(
          oldpeak, slope, ca, thal
     ]])
 
-    # Prediction
-    prediction = model.predict(features)[0]
+    # Get probability instead of direct prediction
+    proba = model.predict_proba(features)[0]
 
-    result = "Heart Disease" if prediction == 1 else "No Heart Disease"
+    # probability of class 1 (Heart Disease)
+    risk_score = proba[1]
+
+    # threshold decision
+    threshold = 0.65  # you can tune this (0.5 - 0.7 is common)
+
+    if risk_score >= threshold:
+       result = "Heart Disease"
+    else:
+       result = "No Heart Disease"
 
     # ---------------- DATABASE SAVE ----------------
     try:
@@ -98,12 +109,13 @@ async def predict(
 
     # ---------------- RESULT PAGE ----------------
     return templates.TemplateResponse(
-        "result.html",
-        {
-            "request": request,
-            "prediction": result
-        }
-    )
+    "result.html",
+    {
+        "request": request,
+        "prediction": result,
+        "risk": round(risk_score * 100, 2)
+    }
+)
 
 
 # ---------------- API ENDPOINT ----------------

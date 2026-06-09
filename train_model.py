@@ -3,45 +3,45 @@ import pickle
 
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
 from sklearn.metrics import accuracy_score, classification_report
 
-print("Loading dataset...")
-
+# Load dataset
 df = pd.read_csv("heart.csv")
 
 X = df.drop("target", axis=1)
 y = df["target"]
 
-print("Splitting data...")
-
+# Split data
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42
 )
 
-print("Creating model...")
+# ---------------- PIPELINE (SCALING + MODEL) ----------------
+model = Pipeline([
+    ("scaler", StandardScaler()),
+    ("classifier", RandomForestClassifier(
+        n_estimators=100,
+        random_state=42
+    ))
+])
 
-model = RandomForestClassifier(
-    n_estimators=100,
-    random_state=42
-)
-
-print("Training model...")
-
+# Train model
 model.fit(X_train, y_train)
 
-print("MODEL TRAINED SUCCESSFULLY")
+# Predictions
+y_pred = model.predict(X_test)
 
-print("Calculating accuracy...")
+# Accuracy
+print("Train Accuracy:", model.score(X_train, y_train))
+print("Test Accuracy:", model.score(X_test, y_test))
 
-train_acc = model.score(X_train, y_train)
-test_acc = model.score(X_test, y_test)
+print("\nClassification Report:\n")
+print(classification_report(y_test, y_pred))
 
-print("Train Accuracy:", train_acc)
-print("Test Accuracy:", test_acc)
-
-print("Saving model...")
-
+# Save model
 with open("heart_model.pkl", "wb") as f:
     pickle.dump(model, f)
 
-print("DONE")
+print("\nModel saved with scaling")
