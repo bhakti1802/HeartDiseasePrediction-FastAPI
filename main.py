@@ -2,46 +2,32 @@ from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
-from pydantic import BaseModel
-
 import numpy as np
+import pandas as pd
 import pickle
 
 from database import get_connection
 
+# Initialize app
 app = FastAPI()
 
+# Templates folder
 templates = Jinja2Templates(directory="templates")
 
+# Load trained model
 model = pickle.load(open("heart_model.pkl", "rb"))
 
 
-class HeartInput(BaseModel):
-
-    age: int
-    sex: int
-    cp: int
-    trestbps: int
-    chol: int
-    fbs: int
-    restecg: int
-    thalach: int
-    exang: int
-    oldpeak: float
-    slope: int
-    ca: int
-    thal: int
-
-
+# ---------------- HOME PAGE ----------------
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
-
     return templates.TemplateResponse(
         "index.html",
         {"request": request}
     )
 
 
+# ---------------- PREDICT (WEB FORM) ----------------
 @app.post("/predict", response_class=HTMLResponse)
 async def predict(
     request: Request,
@@ -60,54 +46,53 @@ async def predict(
     thal: int = Form(...)
 ):
 
-    features = np.array([[
-        age,
-        sex,
-        cp,
-        trestbps,
-        chol,
-        fbs,
-        restecg,
-        thalach,
-        exang,
-        oldpeak,
-        slope,
-        ca,
-        thal
-    ]])
+    # ---------------- SAFE INPUT HANDLING ----------------
+    input_data = pd.DataFrame([{
+        "age": age,
+        "sex": sex,
+        "cp": cp,
+        "trestbps": trestbps,
+        "chol": chol,
+        "fbs": fbs,
+        "restecg": restecg,
+        "thalach": thalach,
+        "exang": exang,
+        "oldpeak": oldpeak,
+        "slope": slope,
+        "ca": ca,
+        "thal": thal
+    }])
 
+    # Convert to model input
+    features = input_data.values
+
+    # Prediction
     prediction = model.predict(features)[0]
 
-    result = (
-        "Heart Disease"
-        if prediction == 1
-        else "No Heart Disease"
-    )
+    result = "Heart Disease" if prediction == 1 else "No Heart Disease"
 
-    conn = get_connection()
-    cursor = conn.cursor()
+    # ---------------- DATABASE SAVE ----------------
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
 
-    cursor.execute(
-        """
-        INSERT INTO prediction
-        (age,sex,cp,trestbps,chol,prediction)
-        VALUES(%s,%s,%s,%s,%s,%s)
-        """,
-        (
-            age,
-            sex,
-            cp,
-            trestbps,
-            chol,
-            result
+        cursor.execute(
+            """
+            INSERT INTO prediction
+            (age, sex, cp, trestbps, chol, prediction)
+            VALUES (%s, %s, %s, %s, %s, %s)
+            """,
+            (age, sex, cp, trestbps, chol, result)
         )
-    )
 
-    conn.commit()
+        conn.commit()
+        cursor.close()
+        conn.close()
 
-    cursor.close()
-    conn.close()
+    except Exception as e:
+        print("Database Error:", e)
 
+    # ---------------- RESULT PAGE ----------------
     return templates.TemplateResponse(
         "result.html",
         {
@@ -117,57 +102,42 @@ async def predict(
     )
 
 
+# ---------------- API ENDPOINT ----------------
 @app.post("/api/predict")
-async def predict_api(data: HeartInput):
+async def predict_api(data: dict):
 
-    features = np.array([[
-        data.age,
-        data.sex,
-        data.cp,
-        data.trestbps,
-        data.chol,
-        data.fbs,
-        data.restecg,
-        data.thalach,
-        data.exang,
-        data.oldpeak,
-        data.slope,
-        data.ca,
-        data.thal
-    ]])
+    input_data = pd.DataFrame([data])
+    features = input_data.values
 
     prediction = model.predict(features)[0]
 
-    result = (
-        "Heart Disease"
-        if prediction == 1
-        else "No Heart Disease"
-    )
+    result = "Heart Disease" if prediction == 1 else "No Heart Disease"
 
-    conn = get_connection()
-    cur = conn.cursor()
+    try:
+        conn = get_connection()
+        cur = conn.cursor()
 
-    cur.execute(
-        """
-        INSERT INTO prediction
-        (age,sex,cp,trestbps,chol,prediction)
-        VALUES(%s,%s,%s,%s,%s,%s)
-        """,
-        (
-            data.age,
-            data.sex,
-            data.cp,
-            data.trestbps,
-            data.chol,
-            result
+        cur.execute(
+            """
+            INSERT INTO prediction
+            (age, sex, cp, trestbps, chol, prediction)
+            VALUES (%s, %s, %s, %s, %s, %s)
+            """,
+            (
+                data["age"],
+                data["sex"],
+                data["cp"],
+                data["trestbps"],
+                data["chol"],
+                result
+            )
         )
-    )
 
-    conn.commit()
+        conn.commit()
+        cur.close()
+        conn.close()
 
-    cur.close()
-    conn.close()
+    except Exception as e:
+        print("DB Error:", e)
 
-    return {
-        "prediction": result
-    }
+    return {"prediction": result}
